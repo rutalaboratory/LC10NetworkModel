@@ -40,9 +40,11 @@
 %load data
 load('splitP1_GCaMP6s_sampleData.mat')
 
-%set incorporation method ? 'continous','threshold', or 'none'
+%set P1 incorporation method: 'continous','threshold', or 'none'
 METHOD = 'continous';
-threshold = 0.15;        %P1 activity threshold; ignore if 'continous'
+
+%P1 activity threshold; ignore if 'continous'
+threshold = 0.15;        
 
 %set direction selectivity: 'progressive','regressive', or 'none'
 DIR_SELECTIVITY = 'progressive';
@@ -101,10 +103,10 @@ for i = 1:N-1
         fprintf('%ds have passed out of %ds total',dt*i,t);
     end
     
-    %find current time and index all time point up until it.
+    %find current time and index all time points up until it.
     currTime = dt*i;
     hist = find(bTime <= currTime);
-    corrTime = bTime(hist) - currTime;
+    relativeTime = bTime(hist) - currTime;
     
     %check which past time points stimulus was moving in the spatial
     %receptive field of each neuron
@@ -156,11 +158,11 @@ for i = 1:N-1
     
     %get input current to each LC10a neuron 
     if strcmpi(METHOD,'threshold')
-        filtInput = temporalRF_LC10(inField,corrTime,(tc(ImIdx)>threshold)*0.5);
+        filtInput = temporalRF_LC10(inField,relativeTime,(tc(ImIdx)>threshold)*0.5);
     elseif strcmpi(METHOD,'continous')
-        filtInput = temporalRF_LC10(inField,corrTime,tc(ImIdx));
+        filtInput = temporalRF_LC10(inField,relativeTime,tc(ImIdx));
     elseif strcmpi(METHOD,'none')
-        filtInput = temporalRF_LC10(inField,corrTime,1);
+        filtInput = temporalRF_LC10(inField,relativeTime,1);
     end
     
     % compute voltage and record spiking in each model neuron
